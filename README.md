@@ -25,3 +25,10 @@ The trade-off: parsing preserves the on-wire length field verbatim instead of â€
 ## The awkward edge
 
 The `valid_length` property is a sanity check, not a correctness guarantee: it confirms the length is at least the header size and at most the padded value size, but it does not validate chunk types, parameter types, or semantics. A capture that declares a plausible length for an unknown chunk type will still parse as `valid_length=True`.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
